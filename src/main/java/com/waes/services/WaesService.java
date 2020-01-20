@@ -29,6 +29,13 @@ public interface WaesService {
   void updateLeftJson(WaesEntityLeftJsons entity);
 
   /**
+   * Left json to be retrieved
+   *
+   * @param id
+   */
+  WaesEntityLeftJsons retrieveLeftJson(String id) throws Exception;
+
+  /**
    * Right json save
    *
    * @param entity
@@ -48,6 +55,13 @@ public interface WaesService {
    * @param entity
    */
   void updateRightJson(WaesEntityRightJsons entity);
+
+  /**
+   * Left json to be retrieved
+   *
+   * @param id
+   */
+  WaesEntityRightJsons retrieveRightJson(String id) throws Exception;
 
   /**
    * Json Diff save
@@ -77,5 +91,19 @@ public interface WaesService {
    * @return
    */
   JsonObject getDiff(String id) throws Exception;
+
+  WaesEntityLeftJsons createLeftJsonEntityFromJsonObject(String id, JsonObject leftJson);
+
+  WaesEntityRightJsons createRightJsonEntityFromJsonObject(String id, JsonObject rightJson);
+
+  WaesEntityJsonDiff createWaesEntityJsonDiffFromJsonObject(String id, JsonObject json);
+
+  JsonObject getLeftJsonObjectFromLeftJsonEntity(WaesEntityLeftJsons leftJsonEntity)
+      throws Exception;
+
+  JsonObject getRightJsonObjectFromRightJsonEntity(WaesEntityRightJsons rightJsonEntity)
+      throws Exception;
+
+  public void updateStatusAfterProcessed(String id);
 
 }

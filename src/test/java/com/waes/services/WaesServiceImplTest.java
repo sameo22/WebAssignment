@@ -1,7 +1,9 @@
-package com.waes;
+package com.waes.services;
 
-import org.junit.jupiter.api.Test;
+import com.waes.services.impl.WaesServiceImpl;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,14 +12,18 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = WaesApplicationTests.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = WaesServiceImplTest.class)
 @ActiveProfiles("development")
 @ComponentScan(basePackages = {"com.q6cyber"})
 @EnableAutoConfiguration(exclude = {JacksonAutoConfiguration.class})
-class WaesApplicationTests {
+public class WaesServiceImplTest {
+
+  @Autowired
+  private WaesServiceImpl waesService;
 
   @Test
-  void contextLoads() {
+  public void testSaveLeftJson(){
+    //waesService.saveLeftJson();
   }
 
 }

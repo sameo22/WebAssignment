@@ -22,8 +22,11 @@ public class WaesEntityRightJsons {
   @Column(name = "status")
   private String status;
 
-  @Column(name = "date_saved")
-  private LocalDateTime dateSaved;
+  @Column(name = "date_created")
+  private LocalDateTime dateCreated;
+
+  @Column(name = "date_updated")
+  private LocalDateTime dateUpdated;
 
   public String getIdRightJson() {
     return idRightJson;
@@ -49,11 +52,19 @@ public class WaesEntityRightJsons {
     this.status = status;
   }
 
-  public LocalDateTime getDateSaved() {
-    return dateSaved;
+  public LocalDateTime getDateCreated() {
+    return dateCreated;
   }
 
-  public void setDateSaved(LocalDateTime dateSaved) {
-    this.dateSaved = dateSaved;
+  public void setDateCreated(LocalDateTime dateCreated) {
+    this.dateCreated = dateCreated;
+  }
+
+  public LocalDateTime getDateUpdated() {
+    return dateUpdated;
+  }
+
+  public void setDateUpdated(LocalDateTime dateUpdated) {
+    this.dateUpdated = dateUpdated;
   }
 }

@@ -14,14 +14,11 @@ public class WaesEntityJsonDiff {
   @Column(name = "id_json_diff")
   private String idJsondiff;
 
-  @Column(name = "is_equal")
-  private Boolean is_equal;
-
-  @Column(name = "json_diffs")
+  @Column(name = "json_diffs", length = 1024 * 1024 * 1024)
   private String jsonDiffs;
 
-  @Column(name = "date_saved")
-  private LocalDateTime dateSaved;
+  @Column(name = "date_created")
+  private LocalDateTime dateCreated;
 
   public String getIdJsondiff() {
     return idJsondiff;
@@ -29,14 +26,6 @@ public class WaesEntityJsonDiff {
 
   public void setIdJsondiff(String idJsondiff) {
     this.idJsondiff = idJsondiff;
-  }
-
-  public Boolean getIs_equal() {
-    return is_equal;
-  }
-
-  public void setIs_equal(Boolean is_equal) {
-    this.is_equal = is_equal;
   }
 
   public String getJsonDiffs() {
@@ -47,11 +36,12 @@ public class WaesEntityJsonDiff {
     this.jsonDiffs = jsonDiffs;
   }
 
-  public LocalDateTime getDateSaved() {
-    return dateSaved;
+  public LocalDateTime getDateCreated() {
+    return dateCreated;
   }
 
-  public void setDateSaved(LocalDateTime dateSaved) {
-    this.dateSaved = dateSaved;
+  public void setDateCreated(LocalDateTime dateCreated) {
+    this.dateCreated = dateCreated;
   }
+
 }

@@ -1,0 +1,38 @@
+spring:
+  profiles: development
+  http:
+    converters:
+      preferred-json-mapper: gson
+  datasource:
+    url: jdbc:mysql://localhost:3306/waesdev?useSSL=false
+    username: root
+    password: admin
+    testOnBorrow: true
+    validationQuery: SELECT 1
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        ddl-auto: update
+server:
+  port: 8090
+
+---
+spring:
+  profiles: prod
+  http:
+    converters:
+      preferred-json-mapper: gson
+  datasource:
+    url: jdbc:mysql://localhost:3306/waesprod?useSSL=false
+    username: root
+    password: admin
+    testOnBorrow: true
+    validationQuery: SELECT 1
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        ddl-auto: update
+server:
+  port: 8080

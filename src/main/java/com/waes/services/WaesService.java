@@ -78,32 +78,87 @@ public interface WaesService {
   void deleteJsonDiff(WaesEntityJsonDiff entity);
 
   /**
-   * Json Diff update
-   *
-   * @param entity
-   */
-  void updateJsonDiff(WaesEntityJsonDiff entity);
-
-  /**
-   * Logic for json comparison based in id
+   * Contains the logic to get the left and right jsons by id, converts the jsons into maps so that
+   * the Maps.difference from Guava can analyze the two maps and check for json differences,
+   * returning a JsonObject with the results.
    *
    * @param id
-   * @return
+   * @return JsonObject
+   * @throws Exception
    */
   JsonObject getDiff(String id) throws Exception;
 
-  WaesEntityLeftJsons createLeftJsonEntityFromJsonObject(String id, JsonObject leftJson);
+  /**
+   * Creates WaesEntityLeftJsons from a JsonObject
+   * @param id
+   * @param encoded
+   * @return WaesEntityLeftJsons
+   * @throws Exception
+   */
+  WaesEntityLeftJsons createLeftJsonEntityFromJsonObject(String id, String encoded)
+      throws Exception;
 
-  WaesEntityRightJsons createRightJsonEntityFromJsonObject(String id, JsonObject rightJson);
+  /**
+   * Creates WaesEntityRightJsons from a JsonObject
+   * @param id
+   * @param encoded
+   * @return WaesEntityRightJsons
+   * @throws Exception
+   */
+  WaesEntityRightJsons createRightJsonEntityFromJsonObject(String id, String encoded)
+      throws Exception;
 
+  /**
+   * Creates WaesEntityJsonDiff from a JsonObject
+   * @param id
+   * @param json
+   * @return WaesEntityJsonDiff
+   */
   WaesEntityJsonDiff createWaesEntityJsonDiffFromJsonObject(String id, JsonObject json);
 
+  /**
+   * Creates JsonObject from WaesEntityLeftJsons
+   * @param leftJsonEntity
+   * @return JsonObject
+   * @throws Exception
+   */
   JsonObject getLeftJsonObjectFromLeftJsonEntity(WaesEntityLeftJsons leftJsonEntity)
       throws Exception;
 
+  /**
+   * Creates JsonObject from WaesEntityRightJsons
+   * @param rightJsonEntity
+   * @return JsonObject
+   * @throws Exception
+   */
   JsonObject getRightJsonObjectFromRightJsonEntity(WaesEntityRightJsons rightJsonEntity)
       throws Exception;
 
-  public void updateStatusAfterProcessed(String id);
+  /**
+   * Updates status after diff was made for id
+   * @param id
+   */
+  void updateStatusAfterProcessed(String id);
+
+  /**
+   * Decodes the Base 64 String
+   * @param encoded
+   * @return String
+   */
+  String decodeBase64Json(String encoded);
+
+  /**
+   * Converts the Json String into s JsonObject
+   * @param decoded
+   * @return JsonObject
+   */
+  JsonObject stringToJsonObject(String decoded);
+
+  /**
+   * Checks if Json String is a valid Json
+   * @param jsonInString
+   * @return boolean
+   */
+  boolean isValidJson(String jsonInString);
 
 }

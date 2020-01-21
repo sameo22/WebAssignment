@@ -8,6 +8,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WaesRepositoryJsonDiff extends CrudRepository<WaesEntityJsonDiff, String> {
 
+  /**
+   * Retrieves all data from waes_json_diffs by id
+   * @param ID
+   * @return WaesEntityJsonDiff
+   */
   @Query(value = "select id_json_diff, json_diffs, date_created from waes_json_diffs where id_json_diff = ?1", nativeQuery = true)
   WaesEntityJsonDiff retrieveJsonDiffById(String ID);
 

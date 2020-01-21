@@ -8,7 +8,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WaesRepositoryRightJsons extends CrudRepository<WaesEntityRightJsons, String> {
 
-  @Query(value = "select id_right_json, right_json, status, date_created, date_updated from waes_right_jsons where id_right_json = ?1", nativeQuery = true)
+  /**
+   * Retrieves all data from waes_right_jsons by id
+   * @param ID
+   * @return WaesEntityRightJsons
+   */
+  @Query(value = "select id_right_json, right_json, status, date_created, date_updated, base_64 from waes_right_jsons where id_right_json = ?1", nativeQuery = true)
   WaesEntityRightJsons retrieveRightJsonById(String ID);
 
 }

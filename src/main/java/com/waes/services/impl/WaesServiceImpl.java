@@ -39,71 +39,129 @@ public class WaesServiceImpl implements WaesService {
   @Autowired
   protected WaesRepositoryJsonDiff waesRepositoryJsonDiff;
 
+  /**
+   * Calls repository to save left json
+   *
+   * @param entity
+   */
   @Override
   public void saveLeftJson(WaesEntityLeftJsons entity) {
     waesRepositoryLeftJsons.save(entity);
   }
 
+  /**
+   * Calls repository to delete left json
+   *
+   * @param entity
+   */
   @Override
   public void deleteLeftJson(WaesEntityLeftJsons entity) {
     waesRepositoryLeftJsons.delete(entity);
   }
 
+  /**
+   * Calls repository to update left json
+   *
+   * @param entity
+   */
   @Override
   public void updateLeftJson(WaesEntityLeftJsons entity) {
     waesRepositoryLeftJsons.save(entity);
   }
 
+  /**
+   * Calls repository to retrieve left json by id
+   *
+   * @param id
+   * @return WaesEntityLeftJsons
+   * @throws Exception
+   */
   @Override
   public WaesEntityLeftJsons retrieveLeftJson(String id) throws Exception {
     Optional<WaesEntityLeftJsons> waesEntityLeftJsons = waesRepositoryLeftJsons.findById(id);
-    if(waesEntityLeftJsons.isPresent()){
+    if (waesEntityLeftJsons.isPresent()) {
       return waesEntityLeftJsons.get();
-    }else{
-      throw new Exception("Unable to get objet by id");
+    } else {
+      throw new Exception("Unable to get object by id");
     }
   }
 
+  /**
+   * Calls repository to save right json
+   *
+   * @param entity
+   */
   @Override
   public void saveRightJson(WaesEntityRightJsons entity) {
     waesRepositoryRightJsons.save(entity);
   }
 
+  /**
+   * Calls repository to delete right json
+   *
+   * @param entity
+   */
   @Override
   public void deleteRightJson(WaesEntityRightJsons entity) {
     waesRepositoryRightJsons.delete(entity);
   }
 
+  /**
+   * Calls repository to update right json
+   *
+   * @param entity
+   */
   @Override
   public void updateRightJson(WaesEntityRightJsons entity) {
     waesRepositoryRightJsons.save(entity);
   }
 
+  /**
+   * Calls repository to retrieve right json by id
+   *
+   * @param id
+   * @return WaesEntityRightJsons
+   * @throws Exception
+   */
   @Override
   public WaesEntityRightJsons retrieveRightJson(String id) throws Exception {
     Optional<WaesEntityRightJsons> waesEntityRightJsons = waesRepositoryRightJsons.findById(id);
-    if(waesEntityRightJsons.isPresent()){
+    if (waesEntityRightJsons.isPresent()) {
       return waesEntityRightJsons.get();
-    }else{
+    } else {
       throw new Exception("Unable to get object by id");
     }
   }
 
+  /**
+   * Calls repository to save json diff results
+   *
+   * @param entity
+   */
   @Override
   public void saveJsonDiff(WaesEntityJsonDiff entity) {
     waesRepositoryJsonDiff.save(entity);
   }
 
+  /**
+   * Calls repository to delete json diff results
+   *
+   * @param entity
+   */
   @Override
   public void deleteJsonDiff(WaesEntityJsonDiff entity) {
     waesRepositoryJsonDiff.delete(entity);
   }
 
-  @Override
-  public void updateJsonDiff(WaesEntityJsonDiff entity) {
-    waesRepositoryJsonDiff.save(entity);
-  }
-
+  /**
+   * Contains the logic to get the left and right jsons by id, converts the jsons into maps so that
+   * the Maps.difference from Guava can analyze the two maps and check for json differences,
+   * returning a JsonObject with the results.
+   *
+   * @param id
+   * @return JsonObject
+   * @throws Exception
+   */
   @Override
   public JsonObject getDiff(String id) throws Exception {
 
@@ -122,7 +180,8 @@ public class WaesServiceImpl implements WaesService {
     JsonObject rightJson = getRightJsonObjectFromRightJsonEntity(waesEntityRightJsons);
 
     Gson gson = new Gson();
-    Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+    Type mapType = new TypeToken<Map<String, Object>>() {
+    }.getType();
     Map<String, Object> leftJsonMap = gson.fromJson(leftJson, mapType);
     Map<String, Object> rightJsonMap = gson.fromJson(rightJson, mapType);
 
@@ -144,28 +203,68 @@ public class WaesServiceImpl implements WaesService {
     return jsonObject;
   }
 
+  /**
+   * Creates WaesEntityLeftJsons from a JsonObject
+   * @param id
+   * @param encoded
+   * @return WaesEntityLeftJsons
+   * @throws Exception
+   */
   @Override
-  public WaesEntityLeftJsons createLeftJsonEntityFromJsonObject(String id, JsonObject leftJson) {
-    WaesEntityLeftJsons waesEntityLeftJsons = new WaesEntityLeftJsons();
-    waesEntityLeftJsons.setIdLeftJson(id);
-    waesEntityLeftJsons.setStatus(WaesStatusEnum.NOT_PROCESSED.name());
-    waesEntityLeftJsons.setDateCreated(LocalDateTime.now());
-    waesEntityLeftJsons.setLeftJson(leftJson.toString());
+  public WaesEntityLeftJsons createLeftJsonEntityFromJsonObject(String id, String encoded)
+      throws Exception {
 
-    return waesEntityLeftJsons;
+    String decodedJson = decodeBase64Json(encoded);
+
+    if (isValidJson(decodedJson)) {
+
+      WaesEntityLeftJsons waesEntityLeftJsons = new WaesEntityLeftJsons();
+      waesEntityLeftJsons.setIdLeftJson(id);
+      waesEntityLeftJsons.setStatus(WaesStatusEnum.NOT_PROCESSED.name());
+      waesEntityLeftJsons.setDateCreated(LocalDateTime.now());
+      waesEntityLeftJsons.setLeftJson(decodedJson);
+      waesEntityLeftJsons.setBase64(encoded);
+      return waesEntityLeftJsons;
+
+    } else {
+      throw new Exception("Decoded String is not a valid Json");
+    }
+
   }
 
+  /**
+   * Creates WaesEntityRightJsons from a JsonObject
+   * @param id
+   * @param encoded
+   * @return WaesEntityRightJsons
+   * @throws Exception
+   */
   @Override
-  public WaesEntityRightJsons createRightJsonEntityFromJsonObject(String id, JsonObject rightJson) {
-    WaesEntityRightJsons waesEntityRightJsons = new WaesEntityRightJsons();
-    waesEntityRightJsons.setIdRightJson(id);
-    waesEntityRightJsons.setStatus(WaesStatusEnum.NOT_PROCESSED.name());
-    waesEntityRightJsons.setDateCreated(LocalDateTime.now());
-    waesEntityRightJsons.setRighttJson(rightJson.toString());
+  public WaesEntityRightJsons createRightJsonEntityFromJsonObject(String id, String encoded)
+      throws Exception {
 
-    return waesEntityRightJsons;
+    String decodedJson = decodeBase64Json(encoded);
+
+    if (isValidJson(decodedJson)) {
+      WaesEntityRightJsons waesEntityRightJsons = new WaesEntityRightJsons();
+      waesEntityRightJsons.setIdRightJson(id);
+      waesEntityRightJsons.setStatus(WaesStatusEnum.NOT_PROCESSED.name());
+      waesEntityRightJsons.setDateCreated(LocalDateTime.now());
+      waesEntityRightJsons.setRighttJson(decodedJson);
+      waesEntityRightJsons.setBase64(encoded);
+
+      return waesEntityRightJsons;
+    } else {
+      throw new Exception("Decoded String is not a valid Json");
+    }
   }
 
+  /**
+   * Creates WaesEntityJsonDiff from a JsonObject
+   * @param id
+   * @param json
+   * @return WaesEntityJsonDiff
+   */
   @Override
   public WaesEntityJsonDiff createWaesEntityJsonDiffFromJsonObject(String id, JsonObject json) {
     Gson gson = new Gson();
@@ -177,13 +276,17 @@ public class WaesServiceImpl implements WaesService {
     return waesEntityJsonDiff;
   }
 
+  /**
+   * Creates JsonObject from WaesEntityLeftJsons
+   * @param leftJsonEntity
+   * @return JsonObject
+   * @throws Exception
+   */
   @Override
   public JsonObject getLeftJsonObjectFromLeftJsonEntity(WaesEntityLeftJsons leftJsonEntity)
       throws Exception {
     if (leftJsonEntity != null && StringUtils.isNotBlank(leftJsonEntity.getLeftJson())) {
-      JsonObject convertedObject = new Gson()
-          .fromJson(leftJsonEntity.getLeftJson(), JsonObject.class);
-      return convertedObject;
+      return stringToJsonObject(leftJsonEntity.getLeftJson());
     } else {
       LOG.error(
           "Error in WaesUtil::getLeftJsonObjectFromLeftJsonEntity, the retrieved json cannot be null");
@@ -191,14 +294,18 @@ public class WaesServiceImpl implements WaesService {
     }
   }
 
+  /**
+   * Creates JsonObject from WaesEntityRightJsons
+   * @param rightJsonEntity
+   * @return JsonObject
+   * @throws Exception
+   */
   @Override
   public JsonObject getRightJsonObjectFromRightJsonEntity(WaesEntityRightJsons rightJsonEntity)
       throws Exception {
 
     if (rightJsonEntity != null && StringUtils.isNotBlank(rightJsonEntity.getRighttJson())) {
-      JsonObject convertedObject = new Gson()
-          .fromJson(rightJsonEntity.getRighttJson(), JsonObject.class);
-      return convertedObject;
+      return stringToJsonObject(rightJsonEntity.getRighttJson());
     } else {
       LOG.error(
           "Error in WaesUtil::getRightJsonObjectFromRightJsonEntity, the retrieved json cannot be null");
@@ -206,8 +313,12 @@ public class WaesServiceImpl implements WaesService {
     }
   }
 
+  /**
+   * Updates status after diff was made for id
+   * @param id
+   */
   @Override
-  public void updateStatusAfterProcessed(String id){
+  public void updateStatusAfterProcessed(String id) {
 
     WaesEntityLeftJsons waesEntityLeftJsons = waesRepositoryLeftJsons.retrieveLeftJsonById(id);
     WaesEntityRightJsons waesEntityRightJsons = waesRepositoryRightJsons.retrieveRightJsonById(id);
@@ -220,5 +331,44 @@ public class WaesServiceImpl implements WaesService {
 
     updateLeftJson(waesEntityLeftJsons);
     updateRightJson(waesEntityRightJsons);
+  }
+
+  /**
+   * Decodes the Base 64 String
+   * @param encoded
+   * @return String
+   */
+  @Override
+  public String decodeBase64Json(String encoded) {
+    byte[] decodedBytes = java.util.Base64.getDecoder().decode(encoded);
+    return new String(decodedBytes);
+
+  }
+
+  /**
+   * Converts the Json String into s JsonObject
+   * @param decoded
+   * @return JsonObject
+   */
+  @Override
+  public JsonObject stringToJsonObject(String decoded) {
+    JsonObject json = new Gson().fromJson(decoded, JsonObject.class);
+    return json;
+  }
+
+  /**
+   * Checks if Json String is a valid Json
+   * @param jsonInString
+   * @return boolean
+   */
+  @Override
+  public boolean isValidJson(String jsonInString) {
+    try {
+      Gson gson = new Gson();
+      gson.fromJson(jsonInString, Object.class);
+      return true;
+    } catch (com.google.gson.JsonSyntaxException ex) {
+      return false;
+    }
   }
 }

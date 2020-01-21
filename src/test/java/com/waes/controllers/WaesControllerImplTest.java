@@ -2,8 +2,6 @@ package com.waes.controllers;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
@@ -38,11 +36,10 @@ public class WaesControllerImplTest {
   @Order(1)
   public void testSaveLeftJson() {
 
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    String jsonTest = "{ \"name\": \"test\", \"java\": true }";
-    JsonObject convertedObject = new Gson().fromJson(jsonTest, JsonObject.class);
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    String encodedJson = "eyANCiAgICJuYW1lIjoidGVzdCIsDQogICAiamF2YSI6dHJ1ZQ0KfQ==";
 
-    HttpEntity<String> entity = new HttpEntity<String>(convertedObject.toString(), headers);
+    HttpEntity<String> entity = new HttpEntity<String>(encodedJson, headers);
     ResponseEntity<String> response = restTemplate.exchange(
         "http://localhost:" + port + "/v1/diff/test10/left", HttpMethod.POST, entity, String.class);
     assertEquals("WAES Controller saved the left JsonObject correctly with id: test10",
@@ -66,11 +63,10 @@ public class WaesControllerImplTest {
   @Order(3)
   public void testSaveRightJson() {
 
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    String jsonTest = "{ \"name\": \"test\", \"java\": true }";
-    JsonObject convertedObject = new Gson().fromJson(jsonTest, JsonObject.class);
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    String encodedJson = "eyANCiAgICJuYW1lIjoidGVzdCIsDQogICAiamF2YSI6dHJ1ZQ0KfQ==";
 
-    HttpEntity<String> entity = new HttpEntity<String>(convertedObject.toString(), headers);
+    HttpEntity<String> entity = new HttpEntity<String>(encodedJson, headers);
     ResponseEntity<String> response = restTemplate.exchange(
         "http://localhost:" + port + "/v1/diff/test10/right", HttpMethod.POST, entity, String.class);
     assertEquals("WAES Controller saved the right JsonObject correctly with id: test10",

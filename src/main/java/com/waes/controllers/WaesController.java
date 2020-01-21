@@ -12,24 +12,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public interface WaesController {
 
   /**
+   * Save left json
    * @param id         is the id to be saved in MySql
-   * @param jsonObject is a JsonObject to be saved
+   * @param encoded    is a encoded json to be saved
+   * @return String
    */
   @PostMapping("{ID}/left")
   String saveJsonLeft(@PathVariable("ID") String id,
-      @RequestBody JsonObject jsonObject);
+      @RequestBody String encoded);
 
   /**
+   * Save right json
    * @param id         is the id to be saved in MySql
-   * @param jsonObject is a JsonObject to be saved
+   * @param encoded    is a encoded json to be saved
+   * @return String
    */
   @PostMapping("{ID}/right")
   String saveJsonRight(@PathVariable("ID") String id,
-      @RequestBody JsonObject jsonObject);
+      @RequestBody String encoded);
 
   /**
+   * Calls the method to check differences in jsons by id
    * @param id is the id as in MySql
-   * @return a JsonObject containing the diff results
+   * @return JsonObject
    */
   @GetMapping("{ID}")
   @ResponseBody
@@ -37,36 +42,46 @@ public interface WaesController {
       @PathVariable("ID") String id);
 
   /**
+   * Deletes left json by id
    * @param id         is the id to be deleted in MySql
+   * @return String
    */
   @PostMapping("delete/{ID}/left")
   String deleteJsonLeft(@PathVariable("ID") String id);
 
   /**
+   * Deletes right json by id
    * @param id         is the id to be deleted in MySql
+   * @return String
    */
   @PostMapping("delete/{ID}/right")
   String deleteJsonRight(@PathVariable("ID") String id);
 
   /**
+   * Updates left json
    * @param id         is the id to be updated in MySql
-   * @param jsonObject is a JsonObject to be updated with
+   * @param encoded    is a encoded json to be updated
+   * @return String
    */
   @PostMapping("update/{ID}/left")
   String updateJsonLeft(@PathVariable("ID") String id,
-      @RequestBody JsonObject jsonObject);
+      @RequestBody String encoded);
 
   /**
+   * Updates right json
    * @param id         is the id to be updated in MySql
-   * @param jsonObject is a JsonObject to be updated with
+   * @param encoded    is a encoded json to be updated
+   * @return String
    */
   @PostMapping("update/{ID}/right")
   String updateJsonRight(@PathVariable("ID") String id,
-      @RequestBody JsonObject jsonObject);
+      @RequestBody String encoded);
 
   /**
+   * Returns the whole WaesEntityLeftJsons from id
    * @param id is the id as in MySql
-   * @return WaesEntityLeftJsons the whole entity saved containing the saved json
+   * @return WaesEntityLeftJsons
+   * @throws Exception
    */
   @GetMapping("retrieveEntity/{ID}/left")
   @ResponseBody
@@ -74,8 +89,10 @@ public interface WaesController {
       @PathVariable("ID") String id) throws Exception;
 
   /**
+   * Returns the whole WaesEntityRightJsons from id
    * @param id is the id as in MySql
-   * @return WaesEntityRightJsons the whole entity saved containing the saved json
+   * @return WaesEntityRightJsons
+   * @throws Exception
    */
   @GetMapping("retrieveEntity/{ID}/right")
   @ResponseBody
@@ -83,8 +100,10 @@ public interface WaesController {
       @PathVariable("ID") String id) throws Exception;
 
   /**
+   * Returns the decoded valid json left from id
    * @param id is the id as in MySql
-   * @return JsonObject the whole entity saved containing the saved json
+   * @return JsonObject
+   * @throws Exception
    */
   @GetMapping("retrieveJson/{ID}/left")
   @ResponseBody
@@ -92,8 +111,10 @@ public interface WaesController {
       @PathVariable("ID") String id) throws Exception;
 
   /**
+   * Returns the decoded valid json right from id
    * @param id is the id as in MySql
-   * @return the whole entity saved containing the saved json
+   * @return JsonObject
+   * @throws Exception
    */
   @GetMapping("retrieveJson/{ID}/right")
   @ResponseBody

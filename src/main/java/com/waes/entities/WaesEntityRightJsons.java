@@ -1,8 +1,6 @@
 package com.waes.entities;
 
-import com.google.gson.JsonObject;
 import java.time.LocalDateTime;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -27,6 +25,9 @@ public class WaesEntityRightJsons {
 
   @Column(name = "date_updated")
   private LocalDateTime dateUpdated;
+
+  @Column(name = "base_64")
+  private String base64;
 
   public String getIdRightJson() {
     return idRightJson;
@@ -66,5 +67,13 @@ public class WaesEntityRightJsons {
 
   public void setDateUpdated(LocalDateTime dateUpdated) {
     this.dateUpdated = dateUpdated;
+  }
+
+  public String getBase64() {
+    return base64;
+  }
+
+  public void setBase64(String base64) {
+    this.base64 = base64;
   }
 }

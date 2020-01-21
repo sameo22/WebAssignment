@@ -1,6 +1,8 @@
 package com.waes.services;
 
-import com.waes.services.impl.WaesServiceImpl;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class WaesServiceImplTest {
 
   @Autowired
-  private WaesServiceImpl waesService;
+  private WaesService waesService;
 
   @Test
-  public void testSaveLeftJson(){
-    //waesService.saveLeftJson();
+  public void testIsValidJsonTrue(){
+    String json = "{ \n"
+        + "   \"name\":\"test\",\n"
+        + "   \"java\":true\n"
+        + "}";
+    boolean result = waesService.isValidJson(json);
+    assertTrue(result);
+  }
+
+  @Test
+  public void testIsValidJsonFalse(){
+    String json = "{ \n"
+        + "   \"name\":\"test\",\n"
+        + "   \"java\"";
+    boolean result = waesService.isValidJson(json);
+    assertFalse(result);
   }
 
 }

@@ -44,65 +44,76 @@ java -jar -Dspring.profiles.active=development waes-0.0.1-SNAPSHOT.jar
 ### Save Left Base64 Encoded Json
 ```
 http://localhost:8090/v1/diff/{ID}/left
-returns String message
+POST Base64 Encoded Json text
+RETURNS String message
 ```
 
 ### Save Right Base64 Encoded Json
 ```
 http://localhost:8090/v1/diff/{ID}/right
-returns String message
+POST Base64 Encoded Json text
+RETURNS String message
 ```
 
 ### Retrieve Diff 
 ```
 http://localhost:8090/v1/diff/{ID}
-returns JsonObject result
+GET 
+RETURNS JsonObject result
 ```
 
 ### Delete Left 
 ```
 http://localhost:8090/v1/diff/delete/{ID}/left
-returns String message
+POST
+RETURNS String message
 ```
 
 ### Delete Right
 ```
 http://localhost:8090/v1/diff/delete/{ID}/right
-returns String message
+POST
+RETURNS String message
 ```
 
 ### Update Left 
 ```
 http://localhost:8090/v1/diff/update/{ID}/left
-returns String message
+POST Base64 Encoded Json text
+RETURNS String message
 ```
 
 ### Update Right
 ```
 http://localhost:8090/v1/diff/update/{ID}/right
-returns String message
+POST Base64 Encoded Json text
+RETURNS String message
 ```
 
 ### Retrieve Whole Left Persisted Entity 
 ```
 http://localhost:8090/v1/diff/retrieveEntity/{ID}/left
-returns WaesEntityLeftJsons message
+GET
+RETURNS WaesEntityLeftJsons message
 ```
 
 ### Retrieve Whole Right Persisted Entity 
 ```
 http://localhost:8090/v1/diff/retrieveEntity/{ID}/right
-returns WaesEntityRightJsons message
+GET
+RETURNS WaesEntityRightJsons message
 ```
 
 ### Retrieve Decoded Json Left
 ```
 http://localhost:8090/v1/diff/retrieveJson/{ID}/left
-returns WaesEntityLeftJsons message
+GET
+RETURNS WaesEntityLeftJsons message
 ```
 
 ### Retrieve Decoded Json Right
 ```
 http://localhost:8090/v1/diff/retrieveJson/{ID}/right
-returns WaesEntityRightJsons message
+GET
+RETURNS WaesEntityRightJsons message
 ```

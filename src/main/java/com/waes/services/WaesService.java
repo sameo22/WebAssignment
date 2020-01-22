@@ -1,9 +1,12 @@
 package com.waes.services;
 
+import com.google.common.collect.MapDifference;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.waes.entities.WaesEntityJsonDiff;
 import com.waes.entities.WaesEntityLeftJsons;
 import com.waes.entities.WaesEntityRightJsons;
+import java.util.Map;
 
 public interface WaesService {
 
@@ -90,6 +93,7 @@ public interface WaesService {
 
   /**
    * Creates WaesEntityLeftJsons from a JsonObject
+   *
    * @param id
    * @param encoded
    * @return WaesEntityLeftJsons
@@ -100,6 +104,7 @@ public interface WaesService {
 
   /**
    * Creates WaesEntityRightJsons from a JsonObject
+   *
    * @param id
    * @param encoded
    * @return WaesEntityRightJsons
@@ -110,6 +115,7 @@ public interface WaesService {
 
   /**
    * Creates WaesEntityJsonDiff from a JsonObject
+   *
    * @param id
    * @param json
    * @return WaesEntityJsonDiff
@@ -118,6 +124,7 @@ public interface WaesService {
 
   /**
    * Creates JsonObject from WaesEntityLeftJsons
+   *
    * @param leftJsonEntity
    * @return JsonObject
    * @throws Exception
@@ -127,6 +134,7 @@ public interface WaesService {
 
   /**
    * Creates JsonObject from WaesEntityRightJsons
+   *
    * @param rightJsonEntity
    * @return JsonObject
    * @throws Exception
@@ -136,12 +144,14 @@ public interface WaesService {
 
   /**
    * Updates status after diff was made for id
+   *
    * @param id
    */
   void updateStatusAfterProcessed(String id);
 
   /**
    * Decodes the Base 64 String
+   *
    * @param encoded
    * @return String
    */
@@ -149,6 +159,7 @@ public interface WaesService {
 
   /**
    * Converts the Json String into s JsonObject
+   *
    * @param decoded
    * @return JsonObject
    */
@@ -156,9 +167,46 @@ public interface WaesService {
 
   /**
    * Checks if Json String is a valid Json
+   *
    * @param jsonInString
    * @return boolean
    */
   boolean isValidJson(String jsonInString);
+
+  /**
+   * Flattens json, returns a MapDifference from Guava
+   *
+   * @param leftJson
+   * @param rightJson
+   * @return
+   */
+  MapDifference<String, Object> jsonToMapDifference(JsonObject leftJson, JsonObject rightJson);
+
+  /**
+   * Gets the offsets considering differences values but same key
+   * @param mapDifference
+   * @param jsonObject
+   * @return JsonArray
+   */
+  JsonArray getOffsetsFromDifferencesInValues(MapDifference<String, Object> mapDifference, JsonObject jsonObject);
+
+  /**
+   * Gets the offsets considering unique keys in left json
+   * @param mapDifference
+   * @param jsonObject
+   * @return JsonArray
+   */
+  JsonArray getOffsetsFromDifferencesOnlyInLeftJson(MapDifference<String, Object> mapDifference, JsonObject jsonObject);
+
+  /**
+   * Gets the offsets considering unique keys in right json
+   * @param mapDifference
+   * @param jsonObject
+   * @return JsonArray
+   */
+  JsonArray getOffsetsFromDifferencesOnlyInRightJson(MapDifference<String, Object> mapDifference, JsonObject jsonObject);
+
+
+
 
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
@@ -17,6 +18,8 @@ import com.waes.services.WaesService;
 import com.waes.enums.WaesStatusEnum;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +30,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class WaesServiceImpl implements WaesService {
+
+  public WaesServiceImpl() {
+  }
+
+  public WaesServiceImpl(WaesRepositoryLeftJsons waesRepositoryLeftJsons,
+      WaesRepositoryRightJsons waesRepositoryRightJsons,
+      WaesRepositoryJsonDiff waesRepositoryJsonDiff) {
+    this.waesRepositoryLeftJsons = waesRepositoryLeftJsons;
+    this.waesRepositoryRightJsons = waesRepositoryRightJsons;
+    this.waesRepositoryJsonDiff = waesRepositoryJsonDiff;
+  }
 
   protected static final Logger LOG = LogManager.getLogger(WaesServiceImpl.class);
 
@@ -179,32 +193,33 @@ public class WaesServiceImpl implements WaesService {
     JsonObject leftJson = getLeftJsonObjectFromLeftJsonEntity(waesEntityLeftJsons);
     JsonObject rightJson = getRightJsonObjectFromRightJsonEntity(waesEntityRightJsons);
 
-    Gson gson = new Gson();
-    Type mapType = new TypeToken<Map<String, Object>>() {
-    }.getType();
-    Map<String, Object> leftJsonMap = gson.fromJson(leftJson, mapType);
-    Map<String, Object> rightJsonMap = gson.fromJson(rightJson, mapType);
-
-    System.out.println(Maps.difference(leftJsonMap, rightJsonMap));
-    MapDifference<String, Object> differenceMap = Maps.difference(leftJsonMap, rightJsonMap);
+    MapDifference<String, Object> differenceMap = jsonToMapDifference(leftJson, rightJson);
 
     JsonObject jsonObject = new JsonObject();
+    jsonObject.add("is_equal_content", new JsonPrimitive(differenceMap.areEqual()));
+
     if ((leftJson.size() == rightJson.size())) {
+
+      JsonArray offsetsBoth = getOffsetsFromDifferencesInValues(differenceMap, leftJson);
+      JsonArray offsetsLeftJsonOnly = getOffsetsFromDifferencesOnlyInLeftJson(differenceMap,
+          leftJson);
+      JsonArray offsetsRightJsonOnly = getOffsetsFromDifferencesOnlyInRightJson(differenceMap,
+          rightJson);
+
       jsonObject.add("is_equal_size", new JsonPrimitive(true));
+      jsonObject.add("offsets_same_key_different_values", offsetsBoth);
+      jsonObject.add("offsets_keys_only_left", offsetsLeftJsonOnly);
+      jsonObject.add("offsets_keys_only_right", offsetsRightJsonOnly);
+
     } else {
       jsonObject.add("is_equal_size", new JsonPrimitive(false));
     }
-    jsonObject.add("is_equal_content", new JsonPrimitive(differenceMap.areEqual()));
-
-    //TODO: Manage Diffs Here
-    Map<String, ValueDifference<Object>> different = differenceMap.entriesDiffering();
-    Map<String, Object> common = differenceMap.entriesInCommon();
-
     return jsonObject;
   }
 
   /**
    * Creates WaesEntityLeftJsons from a JsonObject
+   *
    * @param id
    * @param encoded
    * @return WaesEntityLeftJsons
@@ -234,6 +249,7 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Creates WaesEntityRightJsons from a JsonObject
+   *
    * @param id
    * @param encoded
    * @return WaesEntityRightJsons
@@ -261,6 +277,7 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Creates WaesEntityJsonDiff from a JsonObject
+   *
    * @param id
    * @param json
    * @return WaesEntityJsonDiff
@@ -278,6 +295,7 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Creates JsonObject from WaesEntityLeftJsons
+   *
    * @param leftJsonEntity
    * @return JsonObject
    * @throws Exception
@@ -296,6 +314,7 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Creates JsonObject from WaesEntityRightJsons
+   *
    * @param rightJsonEntity
    * @return JsonObject
    * @throws Exception
@@ -315,13 +334,15 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Updates status after diff was made for id
+   *
    * @param id
    */
   @Override
   public void updateStatusAfterProcessed(String id) {
 
     WaesEntityLeftJsons waesEntityLeftJsons = waesRepositoryLeftJsons.retrieveLeftJsonById(id);
-    WaesEntityRightJsons waesEntityRightJsons = waesRepositoryRightJsons.retrieveRightJsonById(id);
+    WaesEntityRightJsons waesEntityRightJsons = waesRepositoryRightJsons
+        .retrieveRightJsonById(id);
 
     waesEntityLeftJsons.setStatus(WaesStatusEnum.PROCESSED.name());
     waesEntityLeftJsons.setDateUpdated(LocalDateTime.now());
@@ -335,6 +356,7 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Decodes the Base 64 String
+   *
    * @param encoded
    * @return String
    */
@@ -342,11 +364,11 @@ public class WaesServiceImpl implements WaesService {
   public String decodeBase64Json(String encoded) {
     byte[] decodedBytes = java.util.Base64.getDecoder().decode(encoded);
     return new String(decodedBytes);
-
   }
 
   /**
    * Converts the Json String into s JsonObject
+   *
    * @param decoded
    * @return JsonObject
    */
@@ -358,6 +380,7 @@ public class WaesServiceImpl implements WaesService {
 
   /**
    * Checks if Json String is a valid Json
+   *
    * @param jsonInString
    * @return boolean
    */
@@ -370,5 +393,93 @@ public class WaesServiceImpl implements WaesService {
     } catch (com.google.gson.JsonSyntaxException ex) {
       return false;
     }
+  }
+
+  /**
+   * Flattens json, returns a MapDifference from Guava
+   *
+   * @param leftJson
+   * @param rightJson
+   * @return
+   */
+  @Override
+  public MapDifference<String, Object> jsonToMapDifference(JsonObject leftJson,
+      JsonObject rightJson) {
+    Gson gson = new Gson();
+    Type mapType = new TypeToken<Map<String, Object>>() {
+    }.getType();
+    Map<String, Object> leftJsonMap = gson.fromJson(leftJson, mapType);
+    Map<String, Object> rightJsonMap = gson.fromJson(rightJson, mapType);
+
+    return Maps.difference(leftJsonMap, rightJsonMap);
+  }
+
+  /**
+   * Gets the offsets considering differences values but same key
+   *
+   * @param mapDifference
+   * @param jsonObject
+   * @return JsonArray
+   */
+  @Override
+  public JsonArray getOffsetsFromDifferencesInValues(MapDifference<String, Object> mapDifference,
+      JsonObject jsonObject) {
+
+    JsonArray offsets = new JsonArray();
+
+    Map<String, ValueDifference<Object>> different = mapDifference.entriesDiffering();
+    if (!different.isEmpty()) {
+      List<String> list = new ArrayList<String>(different.keySet());
+      for (String key : list) {
+        offsets.add(jsonObject.toString().indexOf(key));
+      }
+    }
+    return offsets;
+  }
+
+  /**
+   * Gets the offsets considering unique keys in left json
+   *
+   * @param mapDifference
+   * @param jsonObject
+   * @return JsonArray
+   */
+  @Override
+  public JsonArray getOffsetsFromDifferencesOnlyInLeftJson(
+      MapDifference<String, Object> mapDifference, JsonObject jsonObject) {
+
+    JsonArray offsets = new JsonArray();
+
+    Map<String, Object> entriesOnlyOnLeft = mapDifference.entriesOnlyOnLeft();
+    if (!entriesOnlyOnLeft.isEmpty()) {
+      List<String> list = new ArrayList<String>(entriesOnlyOnLeft.keySet());
+      for (String key : list) {
+        offsets.add(jsonObject.toString().indexOf(key));
+      }
+    }
+    return offsets;
+  }
+
+  /**
+   * Gets the offsets considering unique keys in right json
+   *
+   * @param mapDifference
+   * @param jsonObject
+   * @return JsonArray
+   */
+  @Override
+  public JsonArray getOffsetsFromDifferencesOnlyInRightJson(
+      MapDifference<String, Object> mapDifference, JsonObject jsonObject) {
+
+    JsonArray offsets = new JsonArray();
+
+    Map<String, Object> entriesOnlyOnRight = mapDifference.entriesOnlyOnRight();
+    if (!entriesOnlyOnRight.isEmpty()) {
+      List<String> list = new ArrayList<String>(entriesOnlyOnRight.keySet());
+      for (String key : list) {
+        offsets.add(jsonObject.toString().indexOf(key));
+      }
+    }
+    return offsets;
   }
 }

@@ -96,7 +96,6 @@
 			<version>28.1-jre</version>
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
